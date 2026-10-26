@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import statistics
 
 from app.llm import chat
@@ -72,14 +73,39 @@ def parse_json(text: str) -> dict:
 
 
 def validate(data: dict) -> list[str]:
-    """TODO(D2)：在这里写你的校验规则，返回错误列表；空列表表示合法。
+    """校验模型输出是否符合契约，返回错误列表；空列表表示合法。
 
-    建议至少覆盖：
-    - order_id 为 null 或匹配 ^A\\d{4}$
-    - intent 必须在 INTENTS 内
-    - 不允许出现额外字段
+    只报错误，不做任何修复（修复归 normalize）。
+    规则：
+    1. 必须是 dict
+    2. 只允许 order_id / intent 两个字段
+    3. order_id 为 null 或匹配 ^[Aa]\\d{4}$
+    4. intent 必须在 INTENTS 枚举内
     """
-    return []
+    errors = []
+
+    # 1. 必须是 dict（list / str / null 都不行）
+    if not isinstance(data, dict):
+        return ["输出不是 JSON 对象"]
+
+    # 2. 只允许两个字段，多一个就报错
+    allowed = {"order_id", "intent"}
+    extra = set(data) - allowed
+    if extra:
+        errors.append(f"多余字段: {extra}")
+
+    # 3. order_id: null 或 A/a + 4 位数字
+    oid = data.get("order_id")
+    if oid is not None:
+        if not isinstance(oid, str) or not re.match(r"^[Aa]\d{4}$", oid):
+            errors.append(f"order_id 格式不合法: {oid!r}")
+
+    # 4. intent 必须在枚举里
+    intent = data.get("intent")
+    if intent not in INTENTS:
+        errors.append(f"intent 不在枚举: {intent!r}")
+
+    return errors
 
 
 def normalize(data: dict) -> dict:
