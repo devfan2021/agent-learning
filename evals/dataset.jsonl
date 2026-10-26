@@ -1,0 +1,5 @@
+{"id": "order-status", "input": "帮我查一下订单 A1001 的状态", "expect_contains": ["已发货"]}
+{"id": "shipping", "input": "订单 A1001 现在到哪里了？", "expect_contains": ["运输中"]}
+{"id": "order-amount", "input": "A1002 这个订单多少钱？", "expect_contains": ["129"]}
+{"id": "missing-order", "input": "帮我查订单 A9999", "expect_contains": ["未找到"]}
+{"id": "ambiguous", "input": "帮我查一下订单", "expect_contains": ["订单号"]}
