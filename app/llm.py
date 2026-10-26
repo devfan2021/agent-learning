@@ -24,7 +24,9 @@ def _get_client(settings: Settings) -> OpenAI:
     global _client
     if _client is None:
         if not settings.api_key:
-            raise RuntimeError("缺少 LLM_API_KEY，请复制 .env.example 为 .env 并填入密钥")
+            raise RuntimeError(
+                "缺少 LLM_API_KEY：本地填 .env，云端在运行环境里配敏感变量"
+            )
         _client = OpenAI(base_url=settings.base_url, api_key=settings.api_key)
     return _client
 
