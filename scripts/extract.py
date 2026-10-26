@@ -29,7 +29,8 @@ SYSTEM_PROMPT = """你是查询参数抽取器。把用户的话转成一个 JSO
   shipping 问物流、到货时间、运单号；
   amount 问金额、价格；
   refund 问退款；
-  其余情况为 unknown。
+  有订单号但没说明想查什么（如「帮我查下订单 A1001」），按 order_status 处理；
+  既没有订单号也没有明确意图（如「帮我查订单」），填 unknown。
 
 只输出 JSON，例如：{"order_id": "A1001", "intent": "shipping"}
 """
